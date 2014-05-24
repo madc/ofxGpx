@@ -79,5 +79,6 @@ class ofxGpx {
         vector<GPXTRK> gpxTracks;
     private:
         ofPoint convertToMercator(ofPoint);
+        void calculateBounds(ofPoint);
         ofXml XML;
 };

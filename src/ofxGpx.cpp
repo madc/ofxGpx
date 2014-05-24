@@ -47,6 +47,9 @@ bool ofxGpx::load(string _path) {
                 gpxMetadata.bounds[1] = ofPoint(ofToFloat(XML.getAttribute("maxlon")), ofToFloat(XML.getAttribute("maxlat")));
                 
                 XML.setToParent();
+            } else {
+                gpxMetadata.bounds[0] = ofPoint(180, 90);
+                gpxMetadata.bounds[1] = ofPoint(-180, -90);
             }
             
             XML.setToParent();
@@ -88,6 +91,8 @@ bool ofxGpx::load(string _path) {
             if(XML.exists("link")) {
                 //LinkType
             }
+            
+            calculateBounds(point.lonlat);
             
             gpxWaypoints.push_back(point);
             XML.setToParent();
@@ -167,6 +172,8 @@ bool ofxGpx::load(string _path) {
                     if(XML.exists("link")) {
                         //LinkType
                     }
+                    
+                    calculateBounds(point.lonlat);
                     
                     route.rtept.push_back(point);
                 }
@@ -253,6 +260,8 @@ bool ofxGpx::load(string _path) {
                         //LinkType
                     }
                     
+                    calculateBounds(point.lonlat);
+                    
                     tracksegment.trkpt.push_back(point);
                 }
                 while(XML.setToSibling());
@@ -268,6 +277,9 @@ bool ofxGpx::load(string _path) {
             track.trkseg = tracksegments;
             gpxTracks.push_back(track);
         }
+        
+        cout << gpxMetadata.bounds[0] <<endl;
+        cout << gpxMetadata.bounds[1] <<endl;
 
         return true;
     } else {
@@ -277,6 +289,25 @@ bool ofxGpx::load(string _path) {
         return false;
     }
 };
+
+
+void ofxGpx::calculateBounds(ofPoint _lonlat) {
+    if(_lonlat.x < gpxMetadata.bounds[0].x) {
+        gpxMetadata.bounds[0].x = _lonlat.x;
+    }
+    
+    if(_lonlat.x > gpxMetadata.bounds[1].x) {
+        gpxMetadata.bounds[1].x = _lonlat.x;
+    }
+    
+    if(_lonlat.y < gpxMetadata.bounds[0].y) {
+        gpxMetadata.bounds[0].y = _lonlat.y;
+    }
+    
+    if(_lonlat.y > gpxMetadata.bounds[1].y) {
+        gpxMetadata.bounds[1].y = _lonlat.y;
+    }
+}
 
 // -----------------------------------------------------------------------------------
 
