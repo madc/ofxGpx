@@ -1,0 +1,23 @@
+<install>
+    <name>ofxGpx</name>
+    <version>0.0.1</version>
+    <author>Matthias Esterl</author>
+    <url>http://madcity.at</url>
+    
+    <add>	
+        <!-- ===================================================================== -->
+        <!-- ========================== add per project using this addon ========= -->
+        <!-- ===================================================================== -->
+        
+        <src>
+            <folder name="addons/ofxGeoJSON/src">
+                <file>../../../addons/ofxXmlSettings/src/ofxXmlSettings.h</file>
+                <file>../../../addons/ofxXmlSettings/src/ofxXmlSettings.cpp</file>
+            </folder>
+        </src>
+        
+        <include>
+            <path>../../../addons/ofxXmlSettings/src</path>
+        </include>
+    </add>
+</install>
