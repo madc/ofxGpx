@@ -277,9 +277,6 @@ bool ofxGpx::load(string _path) {
             track.trkseg = tracksegments;
             gpxTracks.push_back(track);
         }
-        
-        cout << gpxMetadata.bounds[0] <<endl;
-        cout << gpxMetadata.bounds[1] <<endl;
 
         return true;
     } else {
