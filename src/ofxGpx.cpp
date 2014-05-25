@@ -43,13 +43,13 @@ bool ofxGpx::load(string _path) {
             if(XML.exists("bounds")) {
                 XML.setTo("bounds[0]");
                 
-                gpxMetadata.bounds[0] = ofPoint(ofToFloat(XML.getAttribute("minlon")), ofToFloat(XML.getAttribute("minlat")));
-                gpxMetadata.bounds[1] = ofPoint(ofToFloat(XML.getAttribute("maxlon")), ofToFloat(XML.getAttribute("maxlat")));
+                gpxMetadata.bounds_lonlat[0] = ofPoint(ofToFloat(XML.getAttribute("minlon")), ofToFloat(XML.getAttribute("minlat")));
+                gpxMetadata.bounds_lonlat[1] = ofPoint(ofToFloat(XML.getAttribute("maxlon")), ofToFloat(XML.getAttribute("maxlat")));
                 
                 XML.setToParent();
             } else {
-                gpxMetadata.bounds[0] = ofPoint(180, 90);
-                gpxMetadata.bounds[1] = ofPoint(-180, -90);
+                gpxMetadata.bounds_lonlat[0] = ofPoint(180, 90);
+                gpxMetadata.bounds_lonlat[1] = ofPoint(-180, -90);
             }
             
             XML.setToParent();
@@ -65,8 +65,8 @@ bool ofxGpx::load(string _path) {
             double lon = ofToDouble(XML.getAttribute("lon"));
             double ele = XML.getValue<double>("ele");
             
-            point.lonlat = ofPoint(lon, lat, ele);
-            point.mercator = convertToMercator(point.lonlat);
+            point.coor_lonlat = ofPoint(lon, lat, ele);
+            point.coor_mercator = convertToMercator(point.coor_lonlat);
             
             if(XML.exists("time")) {
                 point.time = XML.getValue<string>("time");
@@ -92,7 +92,7 @@ bool ofxGpx::load(string _path) {
                 //LinkType
             }
             
-            calculateBounds(point.lonlat);
+            calculateBounds(point.coor_lonlat);
             
             gpxWaypoints.push_back(point);
             XML.setToParent();
@@ -146,8 +146,8 @@ bool ofxGpx::load(string _path) {
                     double lon = ofToDouble(XML.getAttribute("lon"));
                     double ele = XML.getValue<double>("ele");
                     
-                    point.lonlat = ofPoint(lon, lat, ele);
-                    point.mercator = convertToMercator(point.lonlat);
+                    point.coor_lonlat = ofPoint(lon, lat, ele);
+                    point.coor_mercator = convertToMercator(point.coor_lonlat);
                     
                     if(XML.exists("time")) {
                         point.time = XML.getValue<string>("time");
@@ -173,7 +173,7 @@ bool ofxGpx::load(string _path) {
                         //LinkType
                     }
                     
-                    calculateBounds(point.lonlat);
+                    calculateBounds(point.coor_lonlat);
                     
                     route.rtept.push_back(point);
                 }
@@ -233,8 +233,8 @@ bool ofxGpx::load(string _path) {
                     double lon = ofToDouble(XML.getAttribute("lon"));
                     double ele = XML.getValue<double>("ele");
                     
-                    point.lonlat = ofPoint(lon, lat, ele);
-                    point.mercator = convertToMercator(point.lonlat);
+                    point.coor_lonlat = ofPoint(lon, lat, ele);
+                    point.coor_mercator = convertToMercator(point.coor_lonlat);
                     
                     if(XML.exists("time")) {
                         point.time = XML.getValue<string>("time");
@@ -260,7 +260,7 @@ bool ofxGpx::load(string _path) {
                         //LinkType
                     }
                     
-                    calculateBounds(point.lonlat);
+                    calculateBounds(point.coor_lonlat);
                     
                     tracksegment.trkpt.push_back(point);
                 }
@@ -277,7 +277,10 @@ bool ofxGpx::load(string _path) {
             track.trkseg = tracksegments;
             gpxTracks.push_back(track);
         }
-
+        
+        gpxMetadata.bounds_mercator[0] = convertToMercator(gpxMetadata.bounds_lonlat[0]);
+        gpxMetadata.bounds_mercator[1] = convertToMercator(gpxMetadata.bounds_lonlat[1]);
+        
         return true;
     } else {
         // not found or parsing error
@@ -289,33 +292,31 @@ bool ofxGpx::load(string _path) {
 
 
 void ofxGpx::calculateBounds(ofPoint _lonlat) {
-    if(_lonlat.x < gpxMetadata.bounds[0].x) {
-        gpxMetadata.bounds[0].x = _lonlat.x;
+    if(_lonlat.x < gpxMetadata.bounds_lonlat[0].x) {
+        gpxMetadata.bounds_lonlat[0].x = _lonlat.x;
     }
     
-    if(_lonlat.x > gpxMetadata.bounds[1].x) {
-        gpxMetadata.bounds[1].x = _lonlat.x;
+    if(_lonlat.y < gpxMetadata.bounds_lonlat[0].y) {
+        gpxMetadata.bounds_lonlat[0].y = _lonlat.y;
     }
     
-    if(_lonlat.y < gpxMetadata.bounds[0].y) {
-        gpxMetadata.bounds[0].y = _lonlat.y;
+    if(_lonlat.x > gpxMetadata.bounds_lonlat[1].x) {
+        gpxMetadata.bounds_lonlat[1].x = _lonlat.x;
     }
-    
-    if(_lonlat.y > gpxMetadata.bounds[1].y) {
-        gpxMetadata.bounds[1].y = _lonlat.y;
+
+    if(_lonlat.y > gpxMetadata.bounds_lonlat[1].y) {
+        gpxMetadata.bounds_lonlat[1].y = _lonlat.y;
     }
 }
 
 // -----------------------------------------------------------------------------------
 
-// LonLat to Mercator conversion (besed on http://stackoverflow.com/a/14457180/709769)
+// LonLat to Mercator conversion
 ofPoint ofxGpx::convertToMercator(ofPoint _coordinates) {
     ofPoint point;
-    
-    point.x = (_coordinates.x+180)*(ofGetWindowWidth()/360);
-    
-    float mercN = log(tan((PI/4)+(ofDegToRad(_coordinates.y)/2)));
-    point.y = (ofGetWindowHeight()/2)-(ofGetWindowWidth()*mercN/(2*PI));
+
+    point.x = _coordinates.x/180;
+    point.y = log(tan(PI/4 + ofDegToRad(_coordinates.y)/2))/PI;
     
     point.z = _coordinates.z;
     

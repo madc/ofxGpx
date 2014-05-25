@@ -11,12 +11,13 @@ typedef struct GPXMetadataType {
     // link
     string time;
     string keywords;
-    ofPoint bounds [2];
+    ofPoint bounds_lonlat [2];
+    ofPoint bounds_mercator [2];
 } GPXMETADATA;
 
 // GPX wptType
 typedef struct GPXWptType {
-    ofPoint lonlat; // Lon, Lat, Ele
+    ofPoint coor_lonlat; // Lon, Lat, Ele
     string time;
     // magvar
     // geoidheight
@@ -35,7 +36,7 @@ typedef struct GPXWptType {
     // ageofdgpsdata
     // dgpsid
     
-    ofPoint mercator;
+    ofPoint coor_mercator;
 } GPXWPT;
 
 // GPX rteType
