@@ -8,7 +8,7 @@ void ofApp::setup(){
     gpxData.load("my-track.gpx");
     offset = 10;
     
-    mesh.setMode(OF_PRIMITIVE_LINES);
+    mesh.setMode(OF_PRIMITIVE_LINE_STRIP);
 }
 
 //--------------------------------------------------------------
@@ -23,6 +23,8 @@ void ofApp::update(){
     } else {
         scaleFactor = scaleFactorY;
     }
+    
+    mesh.clear();
     
     // This is just a quick and dirty example. Sorry about that.
     for(vector<GPXTRK >::iterator it = gpxData.gpxTracks.begin(); it != gpxData.gpxTracks.end(); ++it) { // Tracks
