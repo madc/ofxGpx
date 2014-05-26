@@ -4,6 +4,7 @@ ofxGpx is an addon for openFrameworks to load GPX 1.1 format files. It is modele
 
 All coordinates are being also converted into [Mercator projection](http://en.wikipedia.org/wiki/Mercator_projection) to be able to plot them into a x,y-based system.
 
+It was tested on Mac OS X (10.9) and openFrameworks 0.8.x
 
 ## License
 
