@@ -31,3 +31,4 @@ build/
 *.exe
 *.o
 *.app*
+example_basic/DerivedData/*
